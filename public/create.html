@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-slate-100">
+  <head>
+    <meta charset="utf-8" />
+    <title>Guess Who – Create Board</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Tailwind CSS via CDN for rapid prototyping -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Optional custom styles -->
+    <link rel="stylesheet" href="../src/css/styles.css" />
+  </head>
+  <body class="min-h-screen flex flex-col text-slate-900">
+    <!-- Shared site header -->
+    <header class="border-b bg-white">
+      <div
+        class="max-w-4xl mx-auto flex items-center justify-between px-4 py-3"
+      >
+        <a href="index.html" class="font-semibold tracking-tight">Guess Who</a>
+        <nav class="flex items-center gap-4 text-sm">
+          <a href="index.html" class="hover:underline">Home</a>
+          <a href="create.html" class="hover:underline">Create Board</a>
+          <a href="play.html" class="hover:underline">Play</a>
+          <button
+            id="theme-toggle"
+            data-theme-toggle
+            type="button"
+            class="text-xs border px-2 py-1 rounded"
+          >
+            Dark mode
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main content area -->
+    <main class="flex-1">
+      <section class="max-w-4xl mx-auto px-4 py-8 space-y-6">
+        <div>
+          <h1 class="text-2xl font-bold">Create a new board</h1>
+          <p class="text-sm text-slate-600">
+            Upload images, give each character a name, and save the board to
+            localStorage or download it as JSON.
+          </p>
+        </div>
+
+        <!-- Board builder form -->
+        <form id="board-form" class="space-y-6">
+          <div class="space-y-2">
+            <label
+              for="board-title"
+              class="block text-sm font-medium text-slate-700"
+              >Board title</label
+            >
+            <input
+              id="board-title"
+              name="board-title"
+              type="text"
+              class="w-full rounded border px-3 py-2 text-sm"
+              placeholder="e.g. My Friends, Family, Celebrities"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <label
+              for="image-input"
+              class="block text-sm font-medium text-slate-700"
+              >Character images</label
+            >
+            <input
+              id="image-input"
+              name="image-input"
+              type="file"
+              accept="image/*"
+              multiple
+              class="block w-full text-sm"
+            />
+            <p class="text-xs text-slate-500">
+              Select one or more image files. For now, the file name is stored
+              in the JSON; you can place the actual images in
+              <code>/public/images</code> later.
+            </p>
+          </div>
+
+          <section class="space-y-2">
+            <h2 class="text-base font-semibold">Characters</h2>
+            <p class="text-xs text-slate-500">
+              Each uploaded file becomes a character. Edit the names below. You
+              can randomize their order for the board layout.
+            </p>
+            <div id="character-list" class="text-sm">
+              <!-- Character previews are rendered here by builder.js -->
+            </div>
+          </section>
+
+          <div
+            class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+          >
+            <div class="flex flex-wrap gap-2">
+              <button
+                id="randomize-btn"
+                type="button"
+                class="rounded border px-3 py-2 text-sm hover:bg-slate-50"
+              >
+                Randomize characters
+              </button>
+              <button
+                id="save-local-btn"
+                type="button"
+                class="rounded border px-3 py-2 text-sm hover:bg-slate-50"
+              >
+                Save to this browser
+              </button>
+              <button
+                id="download-json-btn"
+                type="button"
+                class="rounded border px-3 py-2 text-sm hover:bg-slate-50"
+              >
+                Download JSON
+              </button>
+            </div>
+            <p id="builder-status" class="text-sm text-slate-600">
+              <!-- Status messages from builder.js -->
+            </p>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <!-- Shared footer -->
+    <footer class="border-t bg-white">
+      <div
+        class="max-w-4xl mx-auto px-4 py-4 text-xs text-slate-500 flex justify-between"
+      >
+        <span>Guess Who scaffold – Board builder</span>
+        <span>Extend validation, uploads, and layout as needed.</span>
+      </div>
+    </footer>
+
+    <!-- Page-specific script -->
+    <script type="module" src="../src/js/builder.js"></script>
+  </body>
+</html>

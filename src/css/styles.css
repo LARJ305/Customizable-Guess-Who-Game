@@ -1,0 +1,21 @@
+/* Minimal shared styles for the Guess Who scaffold.
+ * Tailwind (via CDN) handles most layout and spacing.
+ */
+
+/* Visual state when a character is eliminated (card flipped). */
+button.is-eliminated {
+  opacity: 0.5;
+  filter: grayscale(0.8);
+}
+
+/* Basic dark theme tweaks. The `dark` class is toggled on <html> by utils.js. */
+html.dark body {
+  background-color: #020617; /* approx. slate-950 */
+  color: #e5e7eb; /* approx. slate-200 */
+}
+
+html.dark header,
+html.dark footer {
+  background-color: #020617;
+  border-color: #1f2937; /* approx. gray-800 */
+}

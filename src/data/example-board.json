@@ -1,0 +1,12 @@
+{
+  "title": "Example board",
+  "created_at": "2024-01-01T00:00:00.000Z",
+  "characters": [
+    { "id": "ex-1", "name": "Alex", "image": "images/example-1.png" },
+    { "id": "ex-2", "name": "Sam", "image": "images/example-2.png" },
+    { "id": "ex-3", "name": "Jordan", "image": "images/example-3.png" },
+    { "id": "ex-4", "name": "Taylor", "image": "images/example-4.png" },
+    { "id": "ex-5", "name": "Casey", "image": "images/example-5.png" },
+    { "id": "ex-6", "name": "Riley", "image": "images/example-6.png" }
+  ]
+}
