@@ -4,14 +4,13 @@
     <meta charset="utf-8" />
     <title>Guess Who – Redirect</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- Simple redirect so Vercel can serve the root index.html and forward to /public -->
-    <meta http-equiv="refresh" content="0; url=public/index.html" />
+    <!-- Simple redirect to the site root (handled by vercel.json rewrites) -->
+    <meta http-equiv="refresh" content="0; url=/" />
   </head>
   <body>
     <p>
       If you are not redirected automatically,
-      <a href="public/index.html">click here to go to the Guess Who home page</a
-      >.
+      <a href="/">click here to go to the Guess Who home page</a>.
     </p>
   </body>
 </html>

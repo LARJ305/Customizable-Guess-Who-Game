@@ -15,16 +15,17 @@ document.addEventListener("DOMContentLoaded", () => {
 function setupNavigation() {
   const createButton = document.getElementById("create-board-btn");
   const playButton = document.getElementById("play-board-btn");
+  const base = window.location.pathname.replace(/[^/]+$/, ""); // current directory ending with '/'
 
   if (createButton) {
     createButton.addEventListener("click", () => {
-      window.location.href = "create.html";
+      window.location.href = base + "create.html";
     });
   }
 
   if (playButton) {
     playButton.addEventListener("click", () => {
-      window.location.href = "play.html";
+      window.location.href = base + "play.html";
     });
   }
 }
@@ -57,7 +58,7 @@ function renderBoardList() {
     } characters`;
 
     button.addEventListener("click", () => {
-      const url = new URL("play.html", window.location.href);
+      const url = new URL(base + "play.html", window.location.origin + "");
       if (board.id) {
         url.searchParams.set("boardId", board.id);
       }

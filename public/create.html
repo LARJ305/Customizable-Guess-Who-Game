@@ -15,11 +15,11 @@
       <div
         class="max-w-4xl mx-auto flex items-center justify-between px-4 py-3"
       >
-        <a href="index.html" class="font-semibold tracking-tight">Guess Who</a>
+        <a href="/" class="font-semibold tracking-tight">Guess Who</a>
         <nav class="flex items-center gap-4 text-sm">
-          <a href="index.html" class="hover:underline">Home</a>
-          <a href="create.html" class="hover:underline">Create Board</a>
-          <a href="play.html" class="hover:underline">Play</a>
+          <a href="/" class="hover:underline">Home</a>
+          <a href="/create.html" class="hover:underline">Create Board</a>
+          <a href="/play.html" class="hover:underline">Play</a>
           <button
             id="theme-toggle"
             data-theme-toggle
@@ -60,31 +60,21 @@
             />
           </div>
 
-          <div class="space-y-2">
-            <label
-              for="image-input"
-              class="block text-sm font-medium text-slate-700"
-              >Character images</label
-            >
-            <input
-              id="image-input"
-              name="image-input"
-              type="file"
-              accept="image/*"
-              multiple
-              class="block w-full text-sm"
-            />
+          <section class="space-y-2">
+            <h2 class="text-base font-semibold">Add up to 20 characters</h2>
             <p class="text-xs text-slate-500">
-              Select one or more image files. For now, the file name is stored
-              in the JSON; you can place the actual images in
-              <code>/public/images</code> later.
+              Click a tile to upload a photo. The image fills the tile. You can
+              rename characters below and then save/download the board.
             </p>
-          </div>
+            <div id="uploader-grid" class="grid grid-cols-4 gap-3 sm:gap-4">
+              <!-- 20 tiles are rendered by builder.js -->
+            </div>
+          </section>
 
           <section class="space-y-2">
             <h2 class="text-base font-semibold">Characters</h2>
             <p class="text-xs text-slate-500">
-              Each uploaded file becomes a character. Edit the names below. You
+              Each filled tile becomes a character. Edit the names below. You
               can randomize their order for the board layout.
             </p>
             <div id="character-list" class="text-sm">

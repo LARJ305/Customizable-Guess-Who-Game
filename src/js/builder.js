@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
  */
 function setupBuilder() {
   const titleInput = document.getElementById("board-title");
-  const fileInput = document.getElementById("image-input");
+  const uploaderGrid = document.getElementById("uploader-grid");
   const characterList = document.getElementById("character-list");
   const randomizeBtn = document.getElementById("randomize-btn");
   const saveLocalBtn = document.getElementById("save-local-btn");
@@ -27,29 +27,16 @@ function setupBuilder() {
 
   /** @type {Array<{id: string, name: string, image: string}>} */
   let characters = [];
+  const slots = new Array(20).fill(null);
 
-  if (!fileInput || !characterList) return;
+  if (!uploaderGrid || !characterList) return;
 
-  // When the user selects images, create character entries.
-  fileInput.addEventListener("change", (event) => {
-    const files = Array.from(event.target.files || []);
-
-    characters = files.map((file, index) => {
-      const baseName = file.name.replace(/\.[^.]+$/, "");
-      return {
-        id: `${Date.now()}-${index}`,
-        name: baseName,
-        // For now we only store the filename. Place the real image files
-        // into /public/images and keep the same filenames.
-        image: `images/${file.name}`,
-      };
-    });
-
+  renderTiles(uploaderGrid, slots, () => {
+    characters = slots
+      .filter(Boolean)
+      .map((c) => ({ id: c.id, name: c.name, image: c.image }));
     renderCharacters(characterList, characters);
-    setStatus(
-      statusEl,
-      `${characters.length} character(s) loaded. Edit the names and save the board.`
-    );
+    setStatus(statusEl, `${characters.length} character(s) ready.`);
   });
 
   if (randomizeBtn) {
@@ -91,6 +78,83 @@ function setupBuilder() {
   }
 
   // TODO: Add manual drag-and-drop reordering if desired.
+}
+
+function renderTiles(container, slots, onChange) {
+  container.innerHTML = "";
+  for (let i = 0; i < slots.length; i += 1) {
+    const wrapper = document.createElement("div");
+    wrapper.className = "flex flex-col items-center gap-1";
+
+    const tile = document.createElement("button");
+    tile.type = "button";
+    tile.className =
+      "relative h-24 w-24 rounded-xl bg-slate-200 border border-slate-300 hover:bg-slate-100 overflow-hidden flex items-center justify-center";
+
+    const plus = document.createElement("span");
+    plus.textContent = "+";
+    plus.className = "pointer-events-none text-4xl text-slate-400";
+
+    // We preview the selected image by setting it as the tile's background-image.
+    // This avoids absolute positioning quirks across browsers.
+
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.className = "hidden";
+
+    if (slots[i]?.image) {
+      tile.style.backgroundImage = `url(${slots[i].image})`;
+      tile.style.backgroundSize = "cover";
+      tile.style.backgroundPosition = "top";
+    } else {
+      tile.style.backgroundImage = "";
+      tile.appendChild(plus);
+    }
+
+    input.addEventListener("change", (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        slots[i] = {
+          id: `${Date.now()}-${i}`,
+          name: `Person ${i + 1}`,
+          image: String(reader.result || ""),
+        };
+        renderTiles(container, slots, onChange);
+        onChange();
+      };
+      reader.readAsDataURL(file);
+    });
+
+    tile.addEventListener("click", () => input.click());
+
+    const nameInput = document.createElement("input");
+    nameInput.type = "text";
+    nameInput.className =
+      "text-center text-xs font-medium rounded border px-2 py-1 w-24";
+    nameInput.placeholder = `Person ${i + 1}`;
+    nameInput.value = slots[i]?.name || "";
+    nameInput.disabled = !slots[i]?.image;
+
+    nameInput.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+    });
+    nameInput.addEventListener("keydown", (ev) => {
+      ev.stopPropagation();
+    });
+    nameInput.addEventListener("input", () => {
+      if (!slots[i]) return;
+      slots[i].name = nameInput.value || `Person ${i + 1}`;
+      onChange();
+    });
+
+    wrapper.appendChild(tile);
+    wrapper.appendChild(nameInput);
+    wrapper.appendChild(input);
+    container.appendChild(wrapper);
+  }
 }
 
 /**

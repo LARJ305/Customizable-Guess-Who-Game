@@ -133,26 +133,31 @@ function renderBoard(grid, board) {
       "rounded border bg-white px-2 py-3 text-xs",
       "hover:bg-slate-50 transition-colors",
     ].join(" ");
-
-    const imagePlaceholder = document.createElement("div");
-    imagePlaceholder.className = [
-      "mb-2 flex h-16 w-16 items-center justify-center",
-      "rounded-full border bg-slate-100 text-xs",
+    const imageBox = document.createElement("div");
+    imageBox.className = [
+      "mb-2 h-20 w-20 overflow-hidden",
+      "rounded border bg-slate-100",
     ].join(" ");
-    imagePlaceholder.textContent =
-      (character.name && character.name.charAt(0).toUpperCase()) || "?";
-
-    // TODO: Replace placeholder with <img> once real images are available at character.image.
-    // const img = document.createElement('img');
-    // img.src = character.image;
-    // img.alt = character.name || 'Character';
-    // ...
+    if (character.image) {
+      const img = document.createElement("img");
+      img.src = character.image;
+      img.alt = character.name || "Character";
+      img.className = "h-full w-full object-cover object-top";
+      imageBox.appendChild(img);
+    } else {
+      const placeholder = document.createElement("div");
+      placeholder.className =
+        "flex h-full w-full items-center justify-center text-xs";
+      placeholder.textContent =
+        (character.name && character.name.charAt(0).toUpperCase()) || "?";
+      imageBox.appendChild(placeholder);
+    }
 
     const name = document.createElement("span");
     name.className = "text-center text-xs font-medium";
     name.textContent = character.name || "Unknown";
 
-    card.appendChild(imagePlaceholder);
+    card.appendChild(imageBox);
     card.appendChild(name);
 
     card.addEventListener("click", () => {
