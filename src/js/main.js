@@ -19,13 +19,13 @@ function setupNavigation() {
 
   if (createButton) {
     createButton.addEventListener("click", () => {
-      window.location.href = base + "create.html";
+      window.location.href = "/create";
     });
   }
 
   if (playButton) {
     playButton.addEventListener("click", () => {
-      window.location.href = base + "play.html";
+      window.location.href = "/play";
     });
   }
 }
@@ -58,7 +58,7 @@ function renderBoardList() {
     } characters`;
 
     button.addEventListener("click", () => {
-      const url = new URL(base + "play.html", window.location.origin + "");
+      const url = new URL("/play", window.location.origin);
       if (board.id) {
         url.searchParams.set("boardId", board.id);
       }
