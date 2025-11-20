@@ -142,7 +142,15 @@ function renderBoard(grid, board) {
       const img = document.createElement("img");
       img.src = character.image;
       img.alt = character.name || "Character";
-      img.className = "h-full w-full object-cover object-top";
+      img.className = "h-full w-full object-cover pointer-events-none";
+
+      // Support legacy boards (default to top alignment) and new adjustable boards
+      const zoom = character.zoom || 1;
+      const x = character.x !== undefined ? character.x : 50;
+      const y = character.y !== undefined ? character.y : 0;
+
+      img.style.transform = `scale(${zoom})`;
+      img.style.objectPosition = `${x}% ${y}%`;
       imageBox.appendChild(img);
     } else {
       const placeholder = document.createElement("div");

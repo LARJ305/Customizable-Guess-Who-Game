@@ -1,16 +1,24 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <title>Guess Who – Redirect</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- Simple redirect to the site root (handled by vercel.json rewrites) -->
-    <meta http-equiv="refresh" content="0; url=/" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Guess Who? - Custom Game Creator</title>
+    <meta name="description" content="Create custom Guess Who game boards with your own characters. A modern, interactive guessing game experience." />
+    <meta name="author" content="Guess Who Game" />
+
+    <meta property="og:title" content="Guess Who? - Custom Game Creator" />
+    <meta property="og:description" content="Create custom Guess Who game boards with your own characters. A modern, interactive guessing game experience." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@Lovable" />
+    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
   </head>
+
   <body>
-    <p>
-      If you are not redirected automatically,
-      <a href="/">click here to go to the Guess Who home page</a>.
-    </p>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -11,7 +11,110 @@ import {
 document.addEventListener("DOMContentLoaded", () => {
   initThemeToggle();
   setupBuilder();
+  setupImageEditor();
 });
+
+let currentEditIndex = -1;
+let editorConfig = { zoom: 1, x: 50, y: 50 };
+let slotsRef = []; // To access slots from editor
+let renderCallback = null;
+
+function setupImageEditor() {
+  const modalHTML = `
+<div id="image-editor-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50">
+  <div class="w-full max-w-sm rounded-lg bg-white p-4 shadow-xl">
+    <h3 class="mb-4 text-lg font-semibold">Adjust Image</h3>
+    
+    <div class="relative mb-4 h-64 w-full overflow-hidden rounded border bg-slate-100">
+      <img id="editor-preview" class="h-full w-full object-cover" />
+    </div>
+
+    <div class="space-y-3">
+      <div>
+        <label class="mb-1 block text-xs font-medium text-slate-700">Zoom</label>
+        <input id="editor-zoom" type="range" min="1" max="3" step="0.1" class="w-full" />
+      </div>
+      <div>
+        <label class="mb-1 block text-xs font-medium text-slate-700">Position X</label>
+        <input id="editor-x" type="range" min="0" max="100" step="1" class="w-full" />
+      </div>
+      <div>
+        <label class="mb-1 block text-xs font-medium text-slate-700">Position Y</label>
+        <input id="editor-y" type="range" min="0" max="100" step="1" class="w-full" />
+      </div>
+    </div>
+
+    <div class="mt-6 flex justify-end gap-2">
+      <button id="editor-cancel" type="button" class="rounded border px-3 py-2 text-sm hover:bg-slate-50">Cancel</button>
+      <button id="editor-save" type="button" class="rounded bg-blue-600 px-3 py-2 text-sm text-white hover:bg-blue-700">Save</button>
+    </div>
+  </div>
+</div>
+`;
+  document.body.insertAdjacentHTML("beforeend", modalHTML);
+
+  const modal = document.getElementById("image-editor-modal");
+  const preview = document.getElementById("editor-preview");
+  const zoomInput = document.getElementById("editor-zoom");
+  const xInput = document.getElementById("editor-x");
+  const yInput = document.getElementById("editor-y");
+  const cancelBtn = document.getElementById("editor-cancel");
+  const saveBtn = document.getElementById("editor-save");
+
+  const updatePreview = () => {
+    preview.style.transform = `scale(${zoomInput.value})`;
+    preview.style.objectPosition = `${xInput.value}% ${yInput.value}%`;
+  };
+
+  [zoomInput, xInput, yInput].forEach((input) => {
+    input.addEventListener("input", updatePreview);
+  });
+
+  cancelBtn.addEventListener("click", () => {
+    modal.classList.add("hidden");
+  });
+
+  saveBtn.addEventListener("click", () => {
+    if (currentEditIndex > -1 && slotsRef[currentEditIndex]) {
+      slotsRef[currentEditIndex].zoom = parseFloat(zoomInput.value);
+      slotsRef[currentEditIndex].x = parseFloat(xInput.value);
+      slotsRef[currentEditIndex].y = parseFloat(yInput.value);
+      if (renderCallback) renderCallback();
+    }
+    modal.classList.add("hidden");
+  });
+}
+
+function openEditor(index, slots, onRender) {
+  currentEditIndex = index;
+  slotsRef = slots;
+  renderCallback = () =>
+    renderTiles(document.getElementById("uploader-grid"), slots, onRender);
+
+  const slot = slots[index];
+  if (!slot || !slot.image) return;
+
+  const modal = document.getElementById("image-editor-modal");
+  const preview = document.getElementById("editor-preview");
+  const zoomInput = document.getElementById("editor-zoom");
+  const xInput = document.getElementById("editor-x");
+  const yInput = document.getElementById("editor-y");
+
+  preview.src = slot.image;
+
+  const zoom = slot.zoom || 1;
+  const x = slot.x !== undefined ? slot.x : 50;
+  const y = slot.y !== undefined ? slot.y : 50;
+
+  zoomInput.value = zoom;
+  xInput.value = x;
+  yInput.value = y;
+
+  preview.style.transform = `scale(${zoom})`;
+  preview.style.objectPosition = `${x}% ${y}%`;
+
+  modal.classList.remove("hidden");
+}
 
 /**
  * Initialize event listeners for the builder UI.
@@ -32,9 +135,14 @@ function setupBuilder() {
   if (!uploaderGrid || !characterList) return;
 
   renderTiles(uploaderGrid, slots, () => {
-    characters = slots
-      .filter(Boolean)
-      .map((c) => ({ id: c.id, name: c.name, image: c.image }));
+    characters = slots.filter(Boolean).map((c) => ({
+      id: c.id,
+      name: c.name,
+      image: c.image,
+      zoom: c.zoom || 1,
+      x: c.x !== undefined ? c.x : 50,
+      y: c.y !== undefined ? c.y : 50,
+    }));
     renderCharacters(characterList, characters);
     setStatus(statusEl, `${characters.length} character(s) ready.`);
   });
@@ -86,10 +194,10 @@ function renderTiles(container, slots, onChange) {
     const wrapper = document.createElement("div");
     wrapper.className = "flex flex-col items-center gap-1";
 
-    const tile = document.createElement("button");
-    tile.type = "button";
+    const tile = document.createElement("div");
+    // tile.type = "button";
     tile.className =
-      "relative h-24 w-24 rounded-xl bg-slate-200 border border-slate-300 hover:bg-slate-100 overflow-hidden flex items-center justify-center";
+      "relative h-24 w-24 rounded-xl bg-slate-200 border border-slate-300 hover:bg-slate-100 overflow-hidden flex items-center justify-center cursor-pointer";
 
     const plus = document.createElement("span");
     plus.textContent = "+";
@@ -104,11 +212,35 @@ function renderTiles(container, slots, onChange) {
     input.className = "hidden";
 
     if (slots[i]?.image) {
-      tile.style.backgroundImage = `url(${slots[i].image})`;
-      tile.style.backgroundSize = "cover";
-      tile.style.backgroundPosition = "top";
+      const img = document.createElement("img");
+      img.src = slots[i].image;
+      img.className = "h-full w-full object-cover pointer-events-none";
+
+      const zoom = slots[i].zoom || 1;
+      const x = slots[i].x !== undefined ? slots[i].x : 50;
+      const y = slots[i].y !== undefined ? slots[i].y : 50;
+
+      img.style.transform = `scale(${zoom})`;
+      img.style.objectPosition = `${x}% ${y}%`;
+
+      tile.appendChild(img);
+
+      // Edit button
+      const editBtn = document.createElement("button");
+      editBtn.type = "button";
+      editBtn.className =
+        "absolute bottom-1 right-1 bg-white/90 hover:bg-white text-slate-700 rounded p-1 shadow-sm z-10";
+      editBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`;
+      editBtn.title = "Adjust image";
+
+      editBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        openEditor(i, slots, onChange);
+      });
+
+      tile.appendChild(editBtn);
     } else {
-      tile.style.backgroundImage = "";
       tile.appendChild(plus);
     }
 
@@ -219,6 +351,9 @@ function buildBoard(titleValue, characters) {
       id: c.id,
       name: c.name,
       image: c.image,
+      zoom: c.zoom,
+      x: c.x,
+      y: c.y,
     })),
   };
 }
